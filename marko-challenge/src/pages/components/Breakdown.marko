@@ -1,0 +1,82 @@
+class {
+    onCreate(input) {
+        this.state = {
+            items: input.data,
+            searchQuery: "",
+            filteredItems: input.data
+        };
+    }
+
+    onSearch(input) {
+        const query = input.target.value.toLowerCase();
+        this.state.searchQuery = query;
+        this.state.filteredItems = this.state.items.filter(item => item.name.toLowerCase().includes(query));
+    }
+}
+
+style {
+    .breakdown-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #1D1D1B;
+        background: #FFFFFF;
+        padding-top: 5rem;
+        min-height: 100vh;
+        width: 100%;
+    }
+    .search-container {
+        width: 80%;
+        max-width: 600px;
+        margin-bottom: 2rem;
+    }
+    .search-input {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    @media (max-width: 768px) {
+        .search-container {
+            width: 95%;
+        }
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+}
+
+<div class="breakdown-container">
+    <div class="search-container">
+        <input
+            type="text"
+            placeholder="Search by item name..."
+            value=state.searchQuery
+            on-input("onSearch")
+            class="search-input"
+        />
+    </div>
+    <table class="table table-responsive table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Revenue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <if(state.filteredItems.length)>
+                <for|item| of=state.filteredItems>
+                    <tr>
+                        <td data-field="name" data-sortable="true">${item.name}</td>
+                        <td data-field="quantity" data-sortable="true">${item.quantity}</td>
+                        <td data-field="revenue" data-sortable="true">$${(item.revenue / 100).toFixed(2)}</td>
+                    </tr>
+                </for>
+            </if>
+        </tbody>
+    </table>
+</div>
+    

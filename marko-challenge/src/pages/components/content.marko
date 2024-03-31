@@ -1,0 +1,129 @@
+<!-- For more documentation on adding state see: https://markojs.com/docs/getting-started/#adding-state -->
+
+import seedData from '../../seed.json';
+import Totals from './Totals.marko';
+import Breakdown from './Breakdown.marko';
+
+class {
+  onCreate() {
+    this.state = {
+      previewSeedData: false,
+      totals: {
+        grossSales: 0,
+        netSales: 0,
+        autogratuity: 0,
+        tax: 0,
+        tip: 0,
+      },
+      items: [],  
+      currentTab: 'totals',
+    };
+
+    this.calculateTotals();
+  }
+
+  setActiveTab(tabName) {
+    this.state.currentTab = tabName;
+    console.log(tabName);
+  }
+
+  calculateTotals() {
+      const itemTotals = {}
+      seedData['tabs'].forEach(tab => {
+      // populate totals
+      this.state.totals['grossSales'] += tab['subtotal'];
+      this.state.totals['netSales'] += (tab['subtotal'] - tab['tip']);
+      this.state.totals['autogratuity'] += tab['autogratuity'];
+      this.state.totals['tax'] += tab['tax'];
+      this.state.totals['tip'] += tab['tip'];
+
+      tab['items'].forEach(item => {
+        // initialize item data if it doesn't exist
+        if (!itemTotals[item['name']]) {
+          itemTotals[item['name']] = {
+            "quantity": 0,
+            "revenue": 0,
+          };
+        }
+
+        // populate itemTotals
+        itemTotals[item['name']]['quantity'] += item['quantity'];
+        itemTotals[item['name']]['revenue'] += (item['quantity'] * item['price']);
+      });
+    });
+
+    // doing this in a roundabout way so we efficiently build items while also having a flattened array
+    this.state.items = Object.entries(itemTotals).map(([name, details]) => {
+      return {
+        name,
+        ...details
+      };
+    });
+
+    // sorts by name ascending
+    this.state.items.sort((a, b) => a.name.localeCompare(b.name));
+  }
+}
+
+style {
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #1D1D1B;
+    background: #FFFFFF;
+    min-height: 100vh;
+    width: 100%;
+  }
+  img.logo {
+    width: 40px;
+  }
+  .navbar-brand {
+    margin-left: 1rem;
+  }
+  .navbar-toggler {
+    margin-right: 1rem;
+  }
+  .navbar-nav {
+    padding-left: 1rem;
+  }
+
+  @media (min-width: 576px) {
+    .navbar-nav {
+      padding-left: 0rem;
+    }
+  }
+}
+
+<div class="container">
+  <header>
+    <nav class="navbar navbar-expand-sm bg-light-orange navbar-light fixed-top">
+        <a class="navbar-brand" href="#" on-click("setActiveTab", 'totals')>
+          <img.logo src="../../assets/gotab-logo.svg" alt="GoTab"/>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#" on-click("setActiveTab", 'totals')>Totals</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#" on-click("setActiveTab", 'breakdown')>Breakdown</a>
+            </li>
+          </ul>
+        </div> 
+      </nav>
+  </header>
+  <main class="col-12">
+    <div class="w-100 d-flex flex-column justify-content-center align-items-center">
+      <if(state.currentTab === 'totals')>
+        <Totals data=state.totals/>
+      </if>
+      <if(state.currentTab === 'breakdown')>
+        <Breakdown data=state.items/>
+      </if>
+    </div>
+  </main>
+</div>

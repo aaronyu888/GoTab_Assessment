@@ -1,0 +1,116 @@
+class {
+    onCreate(input) {
+        this.state = {
+            grossSales: input.data.grossSales,
+            netSales: input.data.netSales,
+            autogratuity: input.data.autogratuity,
+            tax: input.data.tax,
+            tip: input.data.tip,
+        };
+    }
+}
+
+style {
+    .totals-container {
+        display: flex;
+        justify-content: center;
+        align-items: start;
+        color: #1D1D1B;
+        background: #FFFFFF;
+        padding-top: 5rem;
+        min-height: 100vh;
+        width: 100%;
+    }
+
+    .card-deck {
+        display: flex;
+        flex-wrap: wrap; 
+        gap: 1rem;
+        justify-content: center;
+        width: calc(100% - 2rem);
+        box-sizing: border-box;
+    }
+
+    .card {
+        background: #F8F9FA;
+        margin-bottom: 1rem;
+        width: calc(20% - 1rem);
+        height: 0;
+        padding-top: calc(20% - 1rem);
+        position: relative
+    }
+
+    .card:hover {
+        position: relative;
+    }
+
+    .card:hover::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.1);
+        pointer-events: none;
+    }
+
+    .card-body {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    @media (max-width: 576px) {
+        .card {
+            width: calc(100% - 2rem);
+            height: auto;
+            padding: 1rem;
+        }
+
+        .card-body {
+            position: relative;
+        }
+    }
+}
+
+<div class="totals-container">
+    <div class="card-deck">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5 class="card-title">Gross Sales</h5>
+                <p class="card-text">$${(state.grossSales / 100).toFixed(2)}</p>
+            </div>
+        </div>
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5 class="card-title">Net Sales</h5>
+                <p class="card-text">$${(state.netSales / 100).toFixed(2)}</p>
+            </div>
+        </div>
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5 class="card-title">Autogratuity</h5>
+                <p class="card-text">$${(state.autogratuity / 100).toFixed(2)}</p>
+            </div>
+        </div>
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5 class="card-title">Taxes</h5>
+                <p class="card-text">$${(state.tax / 100).toFixed(2)}</p>
+            </div>
+        </div>
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5 class="card-title">Tips</h5>
+                <p class="card-text">$${(state.tip / 100).toFixed(2)}</p>            
+            </div>
+        </div>
+    </div>
+</div>
